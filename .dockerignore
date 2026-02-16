@@ -1,0 +1,8 @@
+.env
+jiro.db
+jiro.db-wal
+jiro.db-shm
+venv/
+__pycache__/
+.git/
+*.pyc

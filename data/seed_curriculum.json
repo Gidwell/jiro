@@ -1,0 +1,53 @@
+{
+  "grammar": [
+    {"content": "〜ようにする (make an effort to)", "level": "N2", "category": "grammar"},
+    {"content": "〜ことにする (decide to)", "level": "N2", "category": "grammar"},
+    {"content": "〜ことになる (it has been decided that)", "level": "N2", "category": "grammar"},
+    {"content": "〜わけではない (it's not that)", "level": "N2", "category": "grammar"},
+    {"content": "〜わけにはいかない (can't afford to)", "level": "N2", "category": "grammar"},
+    {"content": "〜にとって (for / from the perspective of)", "level": "N2", "category": "grammar"},
+    {"content": "〜に対して (toward / in contrast to)", "level": "N2", "category": "grammar"},
+    {"content": "〜について (about / regarding)", "level": "N2", "category": "grammar"},
+    {"content": "〜によると (according to)", "level": "N2", "category": "grammar"},
+    {"content": "〜として (as / in the role of)", "level": "N2", "category": "grammar"},
+    {"content": "〜ば〜ほど (the more... the more)", "level": "N2", "category": "grammar"},
+    {"content": "〜たびに (every time)", "level": "N2", "category": "grammar"},
+    {"content": "〜最中に (in the middle of)", "level": "N2", "category": "grammar"},
+    {"content": "〜一方で (while / on the other hand)", "level": "N2", "category": "grammar"},
+    {"content": "〜とともに (together with / as)", "level": "N2", "category": "grammar"},
+    {"content": "〜ついでに (while you're at it)", "level": "N2", "category": "grammar"},
+    {"content": "〜かわりに (instead of / in exchange for)", "level": "N2", "category": "grammar"},
+    {"content": "〜おかげで (thanks to)", "level": "N2", "category": "grammar"},
+    {"content": "〜せいで (because of / due to [negative])", "level": "N2", "category": "grammar"},
+    {"content": "〜くせに (even though / despite)", "level": "N2", "category": "grammar"}
+  ],
+  "vocab": [
+    {"content": "状況 (じょうきょう) — situation", "level": "N2", "category": "vocab"},
+    {"content": "影響 (えいきょう) — influence", "level": "N2", "category": "vocab"},
+    {"content": "経験 (けいけん) — experience", "level": "N2", "category": "vocab"},
+    {"content": "関係 (かんけい) — relationship", "level": "N2", "category": "vocab"},
+    {"content": "環境 (かんきょう) — environment", "level": "N2", "category": "vocab"},
+    {"content": "比較 (ひかく) — comparison", "level": "N2", "category": "vocab"},
+    {"content": "割合 (わりあい) — ratio/proportion", "level": "N2", "category": "vocab"},
+    {"content": "傾向 (けいこう) — tendency", "level": "N2", "category": "vocab"},
+    {"content": "対策 (たいさく) — countermeasure", "level": "N2", "category": "vocab"},
+    {"content": "効果 (こうか) — effect", "level": "N2", "category": "vocab"},
+    {"content": "意識 (いしき) — consciousness/awareness", "level": "N2", "category": "vocab"},
+    {"content": "印象 (いんしょう) — impression", "level": "N2", "category": "vocab"},
+    {"content": "存在 (そんざい) — existence", "level": "N2", "category": "vocab"},
+    {"content": "価値 (かち) — value/worth", "level": "N2", "category": "vocab"},
+    {"content": "程度 (ていど) — degree/extent", "level": "N2", "category": "vocab"}
+  ],
+  "phrases": [
+    {"content": "それはそうと (by the way)", "level": "N2", "category": "phrase"},
+    {"content": "そういえば (come to think of it)", "level": "N2", "category": "phrase"},
+    {"content": "要するに (in short)", "level": "N2", "category": "phrase"},
+    {"content": "つまり (in other words)", "level": "N2", "category": "phrase"},
+    {"content": "ちなみに (by the way / incidentally)", "level": "N2", "category": "phrase"},
+    {"content": "さすがに (as expected)", "level": "N2", "category": "phrase"},
+    {"content": "なるほど (I see / that makes sense)", "level": "N2", "category": "phrase"},
+    {"content": "確かに (certainly / indeed)", "level": "N2", "category": "phrase"},
+    {"content": "一応 (just in case / tentatively)", "level": "N2", "category": "phrase"},
+    {"content": "とりあえず (for now / first of all)", "level": "N2", "category": "phrase"}
+  ]
+}
