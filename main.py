@@ -57,7 +57,7 @@ async def post_init(application: Application) -> None:
     tts = TTS(config.elevenlabs_api_key, config.elevenlabs_voice_id, config.elevenlabs_model_id)
 
     # AI
-    claude = ClaudeClient(config.anthropic_api_key, config.claude_model)
+    claude = ClaudeClient(config.anthropic_api_key, config.claude_model, config.claude_model_fast)
     conversation = ConversationManager(models)
 
     # Learning

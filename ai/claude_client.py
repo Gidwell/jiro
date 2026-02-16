@@ -16,14 +16,17 @@ MAX_RETRIES = 2
 
 
 class ClaudeClient:
-    def __init__(self, api_key: str, model: str) -> None:
+    def __init__(self, api_key: str, model: str, model_fast: str = "") -> None:
         self.client = AsyncAnthropic(api_key=api_key)
         self.model = model
+        self.model_fast = model_fast or model
 
     async def _call(
-        self, system: str, messages: list[dict], max_tokens: int = 2000
+        self, system: str, messages: list[dict], max_tokens: int = 2000,
+        use_fast: bool = False,
     ) -> str:
         """Make a Claude API call with retry logic and prompt caching."""
+        model = self.model_fast if use_fast else self.model
         # Use cache_control on system prompt to reduce TTFT on repeat calls
         system_with_cache = [
             {
@@ -36,7 +39,7 @@ class ClaudeClient:
         for attempt in range(MAX_RETRIES + 1):
             try:
                 response = await self.client.messages.create(
-                    model=self.model,
+                    model=model,
                     max_tokens=max_tokens,
                     system=system_with_cache,
                     messages=messages,
@@ -151,7 +154,7 @@ class ClaudeClient:
         )
 
         messages = [{"role": "user", "content": "Generate today's questions."}]
-        raw = await self._call(system, messages, max_tokens=1500)
+        raw = await self._call(system, messages, max_tokens=1500, use_fast=True)
         result = self._parse_json(raw)
         return result if isinstance(result, list) else []
 
@@ -165,7 +168,7 @@ class ClaudeClient:
         )
 
         messages = [{"role": "user", "content": "Generate this week's summary."}]
-        raw = await self._call(system, messages, max_tokens=1500)
+        raw = await self._call(system, messages, max_tokens=1500, use_fast=True)
         return self._parse_json(raw)
 
     async def update_learner_summary(
@@ -178,7 +181,7 @@ class ClaudeClient:
         )
 
         messages = [{"role": "user", "content": "Update the learner summary."}]
-        raw = await self._call(system, messages, max_tokens=1200)
+        raw = await self._call(system, messages, max_tokens=1200, use_fast=True)
         # This returns plain text, not JSON
         return raw.strip()[:1000]
 

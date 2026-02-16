@@ -18,6 +18,7 @@ class Config:
     # Anthropic
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
     claude_model: str = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5-20250929")
+    claude_model_fast: str = os.getenv("CLAUDE_MODEL_FAST", "claude-haiku-4-5-20251001")
 
     # ElevenLabs
     elevenlabs_api_key: str = os.getenv("ELEVENLABS_API_KEY", "")
