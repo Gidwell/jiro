@@ -91,7 +91,34 @@ def _sqlite_to_pg(sql: str) -> str:
     result = result.replace("datetime('now')", "NOW()")
     # date('now') → CURRENT_DATE
     result = result.replace("date('now')", "CURRENT_DATE")
+    # date(column) → column::date  (SQLite date() cast → PostgreSQL cast)
+    result = re.sub(r"\bdate\((\w+)\)", r"\1::date", result)
     return result
+
+
+def _convert_params_for_pg(params: tuple) -> tuple:
+    """Convert Python types for asyncpg compatibility.
+    asyncpg needs date/datetime objects for DATE/TIMESTAMP columns, not ISO strings."""
+    from datetime import date as _date, datetime as _datetime
+    converted = []
+    for p in params:
+        if isinstance(p, str):
+            # ISO date string → date object
+            if re.match(r"^\d{4}-\d{2}-\d{2}$", p):
+                try:
+                    converted.append(_date.fromisoformat(p))
+                    continue
+                except ValueError:
+                    pass
+            # ISO datetime string → datetime object
+            if re.match(r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}", p):
+                try:
+                    converted.append(_datetime.fromisoformat(p))
+                    continue
+                except ValueError:
+                    pass
+        converted.append(p)
+    return tuple(converted)
 
 
 class PostgresDatabase(Database):
@@ -110,24 +137,27 @@ class PostgresDatabase(Database):
 
     async def execute_write(self, sql: str, params: tuple = ()) -> int:
         pg_sql = _sqlite_to_pg(sql)
+        pg_params = _convert_params_for_pg(params)
         async with self._pool.acquire() as conn:
             if "RETURNING" in pg_sql.upper():
-                result = await conn.fetchval(pg_sql, *params)
+                result = await conn.fetchval(pg_sql, *pg_params)
                 return result or 0
             else:
-                await conn.execute(pg_sql, *params)
+                await conn.execute(pg_sql, *pg_params)
                 return 0
 
     async def fetchone(self, sql: str, params: tuple = ()) -> dict | None:
         pg_sql = _sqlite_to_pg(sql)
+        pg_params = _convert_params_for_pg(params)
         async with self._pool.acquire() as conn:
-            row = await conn.fetchrow(pg_sql, *params)
+            row = await conn.fetchrow(pg_sql, *pg_params)
             return dict(row) if row else None
 
     async def fetchall(self, sql: str, params: tuple = ()) -> list[dict]:
         pg_sql = _sqlite_to_pg(sql)
+        pg_params = _convert_params_for_pg(params)
         async with self._pool.acquire() as conn:
-            rows = await conn.fetch(pg_sql, *params)
+            rows = await conn.fetch(pg_sql, *pg_params)
             return [dict(r) for r in rows]
 
     async def close(self) -> None:
