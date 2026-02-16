@@ -2,7 +2,6 @@
 
 import logging
 import os
-import signal
 
 from telegram.ext import (
     Application,
@@ -95,30 +94,8 @@ async def post_shutdown(application: Application) -> None:
     logger.info("Jiro shut down.")
 
 
-def _kill_existing_instances() -> None:
-    """Kill any other running Jiro bot instances to prevent 409 Conflicts."""
-    my_pid = os.getpid()
-    try:
-        # Find all python3 processes running main.py
-        import subprocess
-        result = subprocess.run(
-            ["pgrep", "-f", "python3.*main\\.py"],
-            capture_output=True, text=True
-        )
-        for line in result.stdout.strip().split("\n"):
-            if not line:
-                continue
-            pid = int(line)
-            if pid != my_pid:
-                logger.info(f"Killing existing bot instance (PID {pid})")
-                os.kill(pid, signal.SIGKILL)
-    except Exception as e:
-        logger.warning(f"Could not check for existing instances: {e}")
-
 
 def main() -> None:
-    _kill_existing_instances()
-
     application = (
         Application.builder()
         .token(config.telegram_bot_token)
@@ -146,7 +123,24 @@ def main() -> None:
     )
 
     logger.info("Starting Jiro...")
-    application.run_polling(drop_pending_updates=True)
+
+    # Use webhook on Railway (avoids 409 Conflict from overlapping deploys)
+    # Use polling for local dev
+    webhook_url = os.getenv("RAILWAY_PUBLIC_DOMAIN", "")
+    port = int(os.getenv("PORT", "8443"))
+
+    if webhook_url:
+        logger.info(f"Running in webhook mode on {webhook_url}")
+        application.run_webhook(
+            listen="0.0.0.0",
+            port=port,
+            url_path="webhook",
+            webhook_url=f"https://{webhook_url}/webhook",
+            drop_pending_updates=True,
+        )
+    else:
+        logger.info("Running in polling mode (local dev)")
+        application.run_polling(drop_pending_updates=True)
 
 
 if __name__ == "__main__":
