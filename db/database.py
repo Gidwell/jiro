@@ -56,20 +56,29 @@ class SQLiteDatabase(Database):
     async def execute_write(self, sql: str, params: tuple = ()) -> int:
         async with self._write_lock:
             cursor = self.conn.execute(sql, params)
-            self.conn.commit()
             if "RETURNING" in sql.upper():
                 row = cursor.fetchone()
+                cursor.close()
+                self.conn.commit()
                 return row[0] if row else 0
-            return cursor.lastrowid or 0
+            lastrowid = cursor.lastrowid or 0
+            cursor.close()
+            self.conn.commit()
+            return lastrowid
 
     async def fetchone(self, sql: str, params: tuple = ()) -> dict | None:
-        cursor = self.conn.execute(sql, params)
-        row = cursor.fetchone()
-        return dict(row) if row else None
+        async with self._write_lock:
+            cursor = self.conn.execute(sql, params)
+            row = cursor.fetchone()
+            cursor.close()
+            return dict(row) if row else None
 
     async def fetchall(self, sql: str, params: tuple = ()) -> list[dict]:
-        cursor = self.conn.execute(sql, params)
-        return [dict(r) for r in cursor.fetchall()]
+        async with self._write_lock:
+            cursor = self.conn.execute(sql, params)
+            rows = [dict(r) for r in cursor.fetchall()]
+            cursor.close()
+            return rows
 
     async def close(self) -> None:
         if self._conn:

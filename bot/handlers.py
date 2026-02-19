@@ -221,8 +221,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     if not text:
         return
 
+    # Check for ?ask hotkey — respond with voice
+    want_voice = "?ask" in text
+    if want_voice:
+        text = text.replace("?ask", "").strip()
+        if not text:
+            return
+
     models: Models = context.bot_data["models"]
     claude: ClaudeClient = context.bot_data["claude"]
+    tts: TTS = context.bot_data["tts"]
     conversation: ConversationManager = context.bot_data["conversation"]
 
     user = await models.get_or_create_user(update.effective_user.id)
@@ -243,6 +251,19 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
         await conversation.add_bot_message(session["session_id"], bot_text)
         await update.message.reply_text(bot_text)
+
+        # Send voice reply if ?ask was used
+        if want_voice and reply:
+            try:
+                tts_mp3_path = await tts.synthesize(reply)
+                tts_ogg_path = mp3_to_ogg(tts_mp3_path)
+                with open(tts_ogg_path, "rb") as f:
+                    await update.message.reply_voice(voice=f)
+                # Clean up
+                if os.path.exists(tts_mp3_path):
+                    os.unlink(tts_mp3_path)
+            except Exception as e:
+                logger.error(f"TTS failed for ?ask: {e}")
 
     except Exception as e:
         logger.error(f"Error handling text message: {e}")
